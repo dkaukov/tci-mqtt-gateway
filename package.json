@@ -13,6 +13,7 @@
     "config": "^3.3.6",
     "mqtt": "^4.2.6",
     "pegjs": "^0.10.0",
-    "websocket": "^1.0.33"
+    "websocket": "^1.0.33",
+    "ws-reconnect": "^1.0.7"
   }
 }
