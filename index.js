@@ -1,6 +1,6 @@
 const WSCLINET = require('ws-reconnect');
 const config = require('config');
-const client = new WSCLINET(config.get("SDR").tci, {
+const wsClient = new WSCLINET(config.get("SDR").tci, {
     retryCount: 1000, 
     reconnectInterval: 5 
 });
@@ -16,27 +16,31 @@ mqttClient.on('connect', () => {
     mqttClient.subscribe('tci-mqtt-gateway/raw/to-sdr');
 })
 
-mqttClient.on('connectFailed', function(error) {
+mqttClient.on('error', function(error) {
     console.log('MQTT: ' + error.toString());
+});
+
+mqttClient.on("reconnect", function(){
+    console.log("MQTT: Reconnecting...");
 });
 
 mqttClient.on('message', (topic, message) => {
     if(topic === 'tci-mqtt-gateway/raw/to-sdr') {
-        if (client.connected) {
-           client.send(message.toString());
+        if (wsClient.connected) {
+           wsClient.send(message.toString());
         }
     }
 })
 
-client.on('connectFailed', function(error) {
-    console.log('WS: ' + error.toString());
+wsClient.on("reconnect", function(){
+    console.log("WS: Reconnecting...");
 });
 
-client.on('connect', function(connection) {
+wsClient.on('connect', function(connection) {
     console.log('WS: Connected to: ' + config.get("SDR").tci);
 });
 
-client.on('message', function(message) {
+wsClient.on('message', function(message) {
     //console.log("Received: '" + message + "'");
     if (mqttClient.connected) {
         mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
@@ -54,7 +58,7 @@ client.on('message', function(message) {
 });
 
 async function start() {
-    client.start();
+    wsClient.start();
 }
 
 start();
