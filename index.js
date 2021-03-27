@@ -11,6 +11,7 @@ var trxState = {};
 mqttClient.on('connect', () => {
     console.log('Mqtt Client Connected');
     mqttClient.subscribe('tci-mqtt-gateway/raw/to-sdr');
+    client.connect(config.get("SDR").tci);
 })
 
 
@@ -38,7 +39,7 @@ client.on('connect', function(connection) {
     })
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-            //console.log("Received: '" + message.utf8Data + "'");
+            console.log("Received: '" + message.utf8Data + "'");
             if (mqttClient.connected) {
                 mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message.utf8Data);
                 try {
@@ -68,7 +69,7 @@ client.on('connect', function(connection) {
 });
 
 async function start() {
-    client.connect(config.get("SDR").tci);
+    //client.connect(config.get("SDR").tci);
 }
 
 start();

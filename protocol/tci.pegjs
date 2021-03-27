@@ -8,6 +8,7 @@ TciCommand
     / if_limits
     / tune
     / trx
+    / device
 
 vfo
 	= "vfo:" receiver:integer SEP channel:integer SEP freq:integer 
@@ -33,12 +34,19 @@ trx
 	= "trx:" channel:integer SEP enabled:boolean 
     {return {cmd: "trx", data:{channel:channel, enabled: enabled}}; }  
 
+device
+   = "device:"  name:string 
+    {return {cmd: "device", data:{name: name}}; }  
+
 float "float"
     = left:[0-9]+ "." right:[0-9]+ { return parseFloat(text()); }
 
 integer "integer"
      = sign:[+-]? digits:[0-9]+ { return parseFloat(text()); }
      
+string "string"
+     = [a-zA-Z0-9_/\!@#$%]* {return text();}
+
 boolean
   = "true"  { return true; }
   / "false" { return false; }
