@@ -17,15 +17,17 @@ mqttClient.on('connect', () => {
 
 client.on('connectFailed', function(error) {
     console.log('Connect Error: ' + error.toString());
+    setTimeout(start, 5000);
 });
 
 client.on('connect', function(connection) {
     console.log('WebSocket Client Connected');
     connection.on('error', function(error) {
-        console.log("Connection Error: " + error.toString());
+        console.log("WS: Connection Error: " + error.toString());
+        setTimeout(start, 5000);
     });
     connection.on('close', function() {
-        console.log('echo-protocol Connection Closed');
+        console.log('WS: Connection Closed');
     });
     mqttClient.on('message', (topic, message) => {
         if(topic === 'tci-mqtt-gateway/raw/to-sdr') {
