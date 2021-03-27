@@ -1,0 +1,8 @@
+{
+  "SDR": {
+    "tci": "ws://localhost:40001/"
+  },
+  "MQTT": {
+    "uri": "mqtt://mqtt.sphere.home"
+  }
+}
