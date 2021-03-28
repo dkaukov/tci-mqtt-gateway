@@ -44,8 +44,8 @@ device
     {return {cmd: "device", data:{name: name}}; }
 
 modulation
-   = "modulation:" receiver:integer SEP mode:boolean
-    {return {cmd: "modulation:", data:{receiver:receiver, mode:mode}}; }
+   = "modulation:" receiver:integer SEP mode:string
+    {return {cmd: "modulation", data:{receiver:receiver, mode:mode}}; }
 
 ready
     = "ready:" state:string
