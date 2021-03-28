@@ -16,6 +16,25 @@
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
               ]
-        }
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+              "--reporter",
+              "dot",
+              "--slow",
+              "5000",
+              "--colors",
+              "${workspaceFolder}/test/**/*.spec.js",
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": [
+              "<node_internals>/**"
+            ],
+            "outputCapture": "std",
+          }
     ],
 }
