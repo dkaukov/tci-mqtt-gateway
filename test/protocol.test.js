@@ -3,7 +3,6 @@ const peg = require("pegjs");
 const fs = require('fs');
 const parser = peg.generate(fs.readFileSync('protocol/tci.pegjs').toString());
 
-
 describe('TCI protocol grammar test', () => {
     it('vfo:0,1,1223123;', () => {
         res = parser.parse("vfo:0,1,1223123;");
@@ -12,7 +11,7 @@ describe('TCI protocol grammar test', () => {
         assert.strictEqual(res.data.channel, 1);
         assert.strictEqual(res.data.freq, 1223123);
        });
-       it('tx_power:10.5;', () => {
+    it('tx_power:10.5;', () => {
         res = parser.parse("tx_power:10.5;");
         assert.strictEqual(res.cmd, "tx_power");
         assert.strictEqual(res.data.tx_power, 10.5);
@@ -29,7 +28,7 @@ describe('TCI protocol grammar test', () => {
         assert.strictEqual(res.data.channel, 1);
         assert.strictEqual(res.data.signal, 0.5);
        });
-       it('rx_smeter:0,1;', () => {
+    it('rx_smeter:0,1;', () => {
         res = parser.parse("rx_smeter:0,1;");
         assert.strictEqual(res.cmd, "rx_smeter");
         assert.strictEqual(res.data.receiver, 0);
