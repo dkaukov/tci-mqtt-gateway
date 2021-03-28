@@ -6,11 +6,16 @@
     "configurations": [
     
         {
-            "type": "node",
+            // https://github.com/microsoft/vscode/issues/102042
+            "type": "pwa-node", 
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/index.js",
-            "outputCapture": "std"
+            "outputCapture": "std",
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+              ]
         }
-    ]
+    ],
 }
