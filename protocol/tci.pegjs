@@ -12,6 +12,7 @@ TciCommand
     / modulation
     / ready
     / rx_smeter
+    / rx_smeter2
     / drive
     / tune_drive
 
@@ -55,6 +56,10 @@ ready
 rx_smeter
     = "rx_smeter:" receiver:integer SEP channel:integer SEP signal:float
     {return {cmd: "rx_smeter", data:{receiver:receiver, channel:channel, signal:signal}}; } 
+
+rx_smeter2
+    = "rx_smeter:" receiver:integer SEP channel:integer 
+    {return {cmd: "rx_smeter", data:{receiver:receiver, channel:channel}}; } 
 
 drive
     = "drive:" power:string 

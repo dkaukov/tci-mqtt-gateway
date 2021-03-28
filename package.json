@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "websocket": "^1.0.33",
     "winston-simple-wrapper": "^0.3.1",
     "ws-reconnect": "^1.0.7"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }
