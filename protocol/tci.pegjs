@@ -11,7 +11,7 @@ TciCommand
     / device
     / modulation
     / ready
-    / rxsmeter
+    / rx_smeter
     / drive
     / tune_drive
 
@@ -51,16 +51,16 @@ ready
     = "ready:" state:string
     {return {cmd: "ready", data:{state:state}}; }
 
-rxsmeter
-    = "rx_smeter:" receiver:integer SEP channel:integer SEP signal:integer
+rx_smeter
+    = "rx_smeter:" receiver:integer SEP channel:integer SEP signal:float
     {return {cmd: "rx_smeter", data:{receiver:receiver, channel:channel, signal:signal}}; } 
 
 drive
-    = "drive:" power:boolean 
+    = "drive:" power:string 
     {return {cmd: "drive", data:{power: power}}; }
 
 tune_drive
-    = "tune_drive:" power:boolean 
+    = "tune_drive:" power:string 
     {return {cmd: "tune_drive", data:{power: power}}; }
 
 float "float"
