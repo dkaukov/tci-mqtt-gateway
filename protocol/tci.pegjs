@@ -52,7 +52,6 @@ ready
     = "ready:" state:string
     {return {cmd: "ready", data:{state:state}}; }
 
-// rx_smeter is not working
 rx_smeter
     = "rx_smeter:" receiver:integer SEP channel:integer SEP signal:integer
     {return {cmd: "rx_smeter", data:{receiver:receiver, channel:channel, signal:signal}}; } 

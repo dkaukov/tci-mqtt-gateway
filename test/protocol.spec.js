@@ -21,12 +21,12 @@ describe('TCI protocol grammar test', () => {
         assert.strictEqual(res.cmd, "tx_swr");
         assert.strictEqual(res.data.tx_swr, 1.1);
        });
-    it('rx_smeter:0,1,0.5;', () => {
-        res = parser.parse("rx_smeter:0,1,0.5;");
+    it('rx_smeter:0,1,-120;', () => {
+        res = parser.parse("rx_smeter:0,1,-120;");
         assert.strictEqual(res.cmd, "rx_smeter");
         assert.strictEqual(res.data.receiver, 0);
         assert.strictEqual(res.data.channel, 1);
-        assert.strictEqual(res.data.signal, 0.5);
+        assert.strictEqual(res.data.signal, -120);
        });
     it('rx_smeter:0,1;', () => {
         res = parser.parse("rx_smeter:0,1;");
