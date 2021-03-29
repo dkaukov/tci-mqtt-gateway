@@ -217,7 +217,7 @@ rx_smeter
 
 
 drive
-    = "drive:" power:string 
+    = "drive:" power:float 
     {return {
         cmd: "drive", 
         data:{power: power}, 
@@ -229,7 +229,7 @@ drive
     }
 
 tune_drive
-    = "tune_drive:" power:string 
+    = "tune_drive:" power:float 
     {return {
         cmd: "tune_drive", 
         data:{power: power}, 
@@ -241,7 +241,7 @@ tune_drive
     }
 
 float "float"
-    = sign:[+-]? left:[0-9]+ "." right:[0-9]+ { return parseFloat(text()); }
+    = sign:[+-]? (left:[0-9]+ ".")? right:[0-9]+ { return parseFloat(text()); }
 
 integer "integer"
      = sign:[+-]? digits:[0-9]+ { return parseFloat(text()); }
