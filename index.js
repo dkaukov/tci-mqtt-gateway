@@ -2,7 +2,7 @@ const { Factory } = require('winston-simple-wrapper')
 const log = new Factory({
   transports: [{
       type: 'console',
-      level: 'debug'
+      level: 'silly'
     }, {
       type: 'file',
       level: 'debug',
@@ -20,7 +20,7 @@ const fs = require('fs');
 const parser = peg.generate(fs.readFileSync('protocol/tci.pegjs').toString());
 const mqtt = require('mqtt')
 const mqttClient =  mqtt.connect(config.get("MQTT").uri, {reconnectPeriod: 5000});
-var trxState = {};
+var trxState = {ready: false};
 
 mqttClient.on('connect', () => {
     log.info('Connected to: ' + config.get("MQTT").uri, "MQTT");
@@ -50,21 +50,25 @@ wsClient.on("reconnect", () => {
 
 wsClient.on('connect', () => {
     log.info('Connected to: ' + config.get("SDR").tci, "WS");
+    trxState = {ready: false};
 });
 
 wsClient.on('message', (message) => {
-    log.silly("Received: '" + message + "'");
+    log.silly("Received: '" + message + "'", "RAW");
     mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
     try {
         const event = parser.parse(message);
-        log.info("TCI: " + JSON.stringify(event), "WS");
+        log.info("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic() + " " + JSON.stringify(event), "WS");
         mqttClient.publish("tci-mqtt-gateway/events/from-sdr",  JSON.stringify(event));
-        mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.cmd,  JSON.stringify(event), {retain: true});
-        Object.assign(trxState, event.data);
-        mqttClient.publish("tci-mqtt-gateway/state/trx",  JSON.stringify(trxState));
+        mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic(),  JSON.stringify(event), {retain: true});
+        trxState =  event.toState(trxState);
+        if (trxState.ready) {
+            mqttClient.publish("tci-mqtt-gateway/state/trx",  JSON.stringify(trxState), {retain: true});
+            log.info("tci-mqtt-gateway/state/trx  " + JSON.stringify(trxState), "STATE");
+        }
     } catch (err) {
         if (!err.hasOwnProperty('location')) throw(err);
-        log.silly('TCI parser error: ' + err);
+        //log.silly('TCI parser error: ' + err);
     }
 });
 
