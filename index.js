@@ -37,7 +37,8 @@ mqttClient.on("reconnect", () =>  {
 
 mqttClient.on('message', (topic, message) => {
     if(topic === 'tci-mqtt-gateway/raw/to-sdr') {
-        if (wsClient.connected) {
+        if (wsClient.isConnected) {
+           log.info(message.toString(), "RAW")
            wsClient.send(message.toString());
         }
     }
@@ -52,7 +53,7 @@ wsClient.on('connect', () => {
 });
 
 wsClient.on('message', (message) => {
-    //log.info("Received: '" + message + "'");
+    log.info("Received: '" + message + "'");
     mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
     try {
         const event = parser.parse(message);
