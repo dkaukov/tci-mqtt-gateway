@@ -53,17 +53,18 @@ wsClient.on('connect', () => {
 });
 
 wsClient.on('message', (message) => {
-    log.info("Received: '" + message + "'");
+    log.silly("Received: '" + message + "'");
     mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
     try {
         const event = parser.parse(message);
         log.info("TCI: " + JSON.stringify(event), "WS");
         mqttClient.publish("tci-mqtt-gateway/events/from-sdr",  JSON.stringify(event));
+        mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.cmd,  JSON.stringify(event), {retain: true});
         Object.assign(trxState, event.data);
         mqttClient.publish("tci-mqtt-gateway/state/trx",  JSON.stringify(trxState));
     } catch (err) {
         if (!err.hasOwnProperty('location')) throw(err);
-        //log.info('TCI parser error: ' + err);
+        log.silly('TCI parser error: ' + err);
     }
 });
 

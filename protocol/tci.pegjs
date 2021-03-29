@@ -69,7 +69,7 @@ tune_drive
     {return {cmd: "tune_drive", data:{power: power}}; }
 
 float "float"
-    = left:[0-9]+ "." right:[0-9]+ { return parseFloat(text()); }
+    = sign:[+-]? left:[0-9]+ "." right:[0-9]+ { return parseFloat(text()); }
 
 integer "integer"
      = sign:[+-]? digits:[0-9]+ { return parseFloat(text()); }
