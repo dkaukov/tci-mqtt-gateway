@@ -11,7 +11,6 @@ function serialize(input) {
     return null;
 }
 
-
 module.exports = {
     serialize: (input) => serialize(input)
 };
