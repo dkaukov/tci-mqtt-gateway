@@ -1,9 +1,9 @@
 const assert = require('assert');
 const peg = require("pegjs");
 const fs = require('fs');
-const parser = peg.generate(fs.readFileSync('protocol/tci.pegjs').toString());
+const parser = peg.generate(fs.readFileSync('protocol/tci-deserializer.pegjs').toString());
 
-describe('TCI protocol grammar test', () => {
+describe('TCI deserializer test', () => {
     it('vfo:0,1,1223123;', () => {
         res = parser.parse("vfo:0,1,1223123;");
         assert.strictEqual(res.cmd, "vfo");
