@@ -1,0 +1,8 @@
+{
+  "SDR": {
+    "tci": "TCI_URI"
+  },
+  "MQTT": {
+    "uri": "MQTT_URI"
+  }
+}
