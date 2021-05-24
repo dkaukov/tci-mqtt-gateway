@@ -8,7 +8,8 @@
     "start": "node index.js",
     "test": "mocha",
     "dist-bin": "pkg .",
-    "dist-docker": "docker build -t dkaukov/tci-mqtt-gateway . &&  docker push  dkaukov/tci-mqtt-gateway"
+    "dist-docker": "docker build -t dkaukov/tci-mqtt-gateway . &&  docker push  dkaukov/tci-mqtt-gateway",
+    "start-docker": "docker run -it --rm --name tci-mqtt-gateway -e MQTT_URI=mqtt://localhost -e TCI_URI=ws://localhost:40001/ dkaukov/tci-mqtt-gateway"
   },
   "author": "",
   "license": "ISC",
