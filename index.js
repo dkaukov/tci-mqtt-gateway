@@ -21,7 +21,7 @@ const fs = require('fs');
 const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-deserializer.pegjs').toString());
 const mqtt = require('mqtt')
 const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000 });
-const serializer = require(__dirname + "/protocol/tci-serializer");
+const serializer = require("./protocol/tci-serializer");
 var trxState = { ready: false };
 
 mqttClient.on('connect', () => {
