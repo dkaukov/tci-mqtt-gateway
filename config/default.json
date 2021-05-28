@@ -4,5 +4,10 @@
   },
   "MQTT": {
     "uri": "mqtt://localhost"
+  },
+  "ratuV2": {
+    "statusTopic": "ratu-v2/devices/+/status",
+    "configTopic": "ratu-v2/configurations/#",
+    "outputPrefix": "ATU-T"
   }
 }

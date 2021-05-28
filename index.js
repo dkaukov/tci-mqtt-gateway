@@ -22,12 +22,18 @@ const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-des
 const mqtt = require('mqtt')
 const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000 });
 const serializer = require("./protocol/tci-serializer");
+const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
+
 var trxState = { ready: false };
+var ratuDevices = {};
+
 
 mqttClient.on('connect', () => {
     log.info('Connected to: ' + config.get("MQTT").uri, "MQTT");
     mqttClient.subscribe('tci-mqtt-gateway/raw/to-sdr');
     mqttClient.subscribe('tci-mqtt-gatewayv2/events/to-sdr');
+    mqttClient.subscribe(config.get("ratuV2").statusTopic);
+    mqttClient.subscribe(config.get("ratuV2").configTopic);
 })
 
 mqttClient.on('error', (error) => {
@@ -38,23 +44,39 @@ mqttClient.on("reconnect", () => {
     log.warn("Reconnecting...", "MQTT");
 });
 
+function testTopicPattern(topic, pattern) {
+    return new RegExp(pattern.split`+`.join`[^/]+`.split`#`.join`.+`).test(topic);
+}
+
 mqttClient.on('message', (topic, message) => {
-    if (wsClient.isConnected) {
-        if (topic === 'tci-mqtt-gateway/raw/to-sdr') {
-            log.info(message.toString(), "RAW")
-            wsClient.send(message.toString());
-        }
-        if (topic === 'tci-mqtt-gatewayv2/events/to-sdr') {
-            try {
-                let msg = serializer.serialize(JSON.parse(message.toString()));
-                log.info(msg, "SER");
-                wsClient.send(msg);
-            } catch (err) {
-                log.error('TCI serializer error: ' + err, "SER");
+    if (testTopicPattern(topic, config.get("ratuV2").statusTopic)) {
+        ratuV2deserializer.deSerializeStatus(config.get("ratuV2").outputPrefix, JSON.parse(message.toString())).forEach(function (msg) {
+            if (typeof msg.value !== "undefined") {
+                mqttClient.publish(msg.topic, String(msg.value));
             }
-        }
+        })
+    } else if (testTopicPattern(topic, config.get("ratuV2").configTopic)) {
+        let device = JSON.parse(message.toString());
+        ratuDevices[device.device.id] = device;
+        log.info("Discovered device: " + JSON.stringify(device), "DISCO");
     } else {
-        log.warn(`wsClient is not connected, discarding: ${message.toString}`, "MQTT")
+        if (wsClient.isConnected) {
+            if (topic === 'tci-mqtt-gateway/raw/to-sdr') {
+                log.info(message.toString(), "RAW")
+                wsClient.send(message.toString());
+            }
+            if (topic === 'tci-mqtt-gatewayv2/events/to-sdr') {
+                try {
+                    let msg = serializer.serialize(JSON.parse(message.toString()));
+                    log.info(msg, "SER");
+                    wsClient.send(msg);
+                } catch (err) {
+                    log.error('TCI serializer error: ' + err, "SER");
+                }
+            }
+        } else {
+            log.warn(`wsClient is not connected, discarding: ${message.toString}`, "MQTT")
+        }
     }
 })
 
