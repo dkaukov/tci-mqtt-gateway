@@ -26,7 +26,7 @@ const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
 
 var trxState = { ready: false };
 var ratuDevices = {};
-
+var activeDevice = undefined;
 
 mqttClient.on('connect', () => {
     log.info('Connected to: ' + config.get("MQTT").uri, "MQTT");
@@ -34,6 +34,7 @@ mqttClient.on('connect', () => {
     mqttClient.subscribe('tci-mqtt-gatewayv2/events/to-sdr');
     mqttClient.subscribe(config.get("ratuV2").statusTopic);
     mqttClient.subscribe(config.get("ratuV2").configTopic);
+    mqttClient.subscribe("ATUconn1/cmd");
 })
 
 mqttClient.on('error', (error) => {
@@ -49,7 +50,17 @@ function testTopicPattern(topic, pattern) {
 }
 
 mqttClient.on('message', (topic, message) => {
-    if (testTopicPattern(topic, config.get("ratuV2").statusTopic)) {
+    if (testTopicPattern(topic, "ATUconn1/cmd")) {
+        cmd = JSON.parse(message.toString());
+        if (typeof cmd["tune"] !== "undefined" && typeof activeDevice !== "undefined") {
+            mqttClient.publish(ratuDevices[activeDevice].commandTopic, JSON.stringify({ cmd: "tune" }));
+        }
+    } else if (testTopicPattern(topic, config.get("ratuV2").statusTopic)) {
+        Object.getOwnPropertyNames(ratuDevices).forEach(function (d) {
+            if (ratuDevices[d].statusTopic === topic) {
+                activeDevice = d;
+            }
+        });
         ratuV2deserializer.deSerializeStatus(config.get("ratuV2").outputPrefix, JSON.parse(message.toString())).forEach(function (msg) {
             if (typeof msg.value !== "undefined") {
                 mqttClient.publish(msg.topic, String(msg.value));

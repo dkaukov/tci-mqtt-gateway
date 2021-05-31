@@ -3,7 +3,7 @@ const jp = require('jsonpath');
 function deSerializeStatus(prefix, input) {
     return [
         {
-            topic: prefix + "/keepalive",
+            topic: prefix + "/TuningStatus",
             value: jp.value(input, "$.atu.state")
         },
         {
@@ -11,11 +11,11 @@ function deSerializeStatus(prefix, input) {
             value: jp.value(input, "$.atu.mode")
         },
         {
-            topic: prefix + "/FwdVoltageADS0mV",
+            topic: prefix + "/rawFWD",
             value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.fwdRaw")
         },
         {
-            topic: prefix + "/RefVoltageADS1mV",
+            topic: prefix + "/rawREF",
             value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.rflRaw")
         },
         {
