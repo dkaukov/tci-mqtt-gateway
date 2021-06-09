@@ -33,7 +33,7 @@ var activeDevice = undefined;
 server.on("message", (value) => {
     let device = Object.getOwnPropertyNames(ratuDevices).map(d => ratuDevices[d]).filter(d => d.device.wifi.ip === value.host).pop();
     if (device) {
-        mqttClient.publish(device.statusTopic + "/log", value.message);
+        mqttClient.publish(device.statusTopic + "/log", value.message.replace(/(\r\n|\n|\r)/gm, ""));
     }
 });
 
