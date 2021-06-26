@@ -3,11 +3,10 @@ FROM node:14-alpine as base
 WORKDIR /app
 RUN apk add --no-cache tzdata eudev
 
-COPY package.json ./
-
 # Dependencies
-#FROM base as dependencies
+FROM base as dependencies
 
+COPY package.json ./
 #COPY package-lock.json ./
 
 RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers git bash && \
