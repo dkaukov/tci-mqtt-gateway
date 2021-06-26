@@ -12,7 +12,7 @@ FROM base as dependencies
 
 RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers git bash && \
     npm install && \
-    npm rebuld && \
+    npm rebuild && \
     apk del .buildtools
 
 # Release
