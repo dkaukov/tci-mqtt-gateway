@@ -12,5 +12,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+    - run: npm install
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:$(date +%s)
+      run: 
+        docker build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:$(date +%s)
