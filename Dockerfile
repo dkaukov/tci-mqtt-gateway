@@ -7,17 +7,15 @@ RUN apk add --no-cache tzdata eudev
 FROM base as dependencies
 
 COPY package.json ./
-#COPY package-lock.json ./
 
 RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers git bash && \
     npm install && \
-    npm rebuild && \
     apk del .buildtools
 
 # Release
-#FROM base as release
+FROM base as release
 
-#COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY index.js ./
 COPY config/ ./config/
 COPY protocol/ ./protocol/
