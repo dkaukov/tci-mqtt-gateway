@@ -32,4 +32,4 @@ jobs:
     - name: Build the Docker image
       run: docker buildx build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest --platform linux/arm/v7 --build-arg ARCH=arm32v7
     - name: Push the Docker image
-      run: docker push dkaukov/tci-mqtt-gateway:latest
+      run: docker buildx push dkaukov/tci-mqtt-gateway:latest
