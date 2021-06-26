@@ -23,6 +23,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build the Docker image
-      run: 
-        docker build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest
-        docker push dkaukov/tci-mqtt-gateway:latest
+      run: docker build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest
+    - name: Push the Docker image
+      run: docker push dkaukov/tci-mqtt-gateway:latest
