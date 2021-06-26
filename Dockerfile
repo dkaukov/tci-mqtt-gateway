@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers 
 FROM base as release
 
 COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/package.json ./package.json
 COPY index.js ./
 COPY config/ ./config/
 COPY protocol/ ./protocol/
