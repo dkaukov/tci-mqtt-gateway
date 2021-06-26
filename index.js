@@ -23,10 +23,19 @@ const mqtt = require('mqtt')
 const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000 });
 const serializer = require("./protocol/tci-serializer");
 const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
+const SyslogServer = require("syslog-server");
+const server = new SyslogServer();
 
 var trxState = { ready: false };
 var ratuDevices = {};
 var activeDevice = undefined;
+
+server.on("message", (value) => {
+    let device = Object.getOwnPropertyNames(ratuDevices).map(d => ratuDevices[d]).filter(d => d.device.wifi.ip === value.host).pop();
+    if (device) {
+        mqttClient.publish(device.statusTopic + "/log", value.message.replace(/(\r\n|\n|\r)/gm, ""));
+    }
+});
 
 mqttClient.on('connect', () => {
     log.info('Connected to: ' + config.get("MQTT").uri, "MQTT");
@@ -122,6 +131,7 @@ wsClient.on('message', (message) => {
 async function start() {
     log.info("Starting up.");
     wsClient.start();
+    server.start({ port: 5140 });
 }
 
 start();
