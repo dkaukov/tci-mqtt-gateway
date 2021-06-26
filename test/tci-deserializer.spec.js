@@ -48,7 +48,21 @@ describe('TCI deserializer test', () => {
         assert.strictEqual(res.topic(), "tune/1");
         state = res.toState({});
         assert.strictEqual(state.trx[1].tune, true);
-       });   
+       });
+    it('tune_drive:25;', () => {
+        res = parser.parse("tune_drive:25;");
+        assert.strictEqual(res.cmd, "tune_drive");
+        assert.strictEqual(res.topic(), "tune_drive");
+        state = res.toState({});
+        assert.strictEqual(state.tune_power_pct, 25);
+       });
+    it('drive:25;', () => {
+        res = parser.parse("drive:25;");
+        assert.strictEqual(res.cmd, "drive");
+        assert.strictEqual(res.topic(), "drive");
+        state = res.toState({});
+        assert.strictEqual(state.tx_power_pct, 25);
+       });
     it('trx:1,true;', () => {
         res = parser.parse("trx:1,true;");
         assert.strictEqual(res.cmd, "trx");
