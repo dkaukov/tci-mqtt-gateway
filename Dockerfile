@@ -21,7 +21,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY index.js ./
 COPY config/ ./config/
 COPY protocol/ ./protocol/
-COPY lib/ ./lib/
+COPY ratu-v2/ ./ratu-v2/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
