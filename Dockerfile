@@ -1,4 +1,5 @@
-FROM node:14-alpine as base
+ARG ARCH=
+FROM ${ARCH}node:14-alpine as base
 
 WORKDIR /app
 RUN apk add --no-cache tzdata eudev
