@@ -36,7 +36,7 @@ mqttClient.on('connect', (connack) => {
     mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gateway/raw/to-sdr");
     mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gatewayv2/events/to-sdr");
     mqttClient.subscribe("$share/tci-mqtt-gateway-group/" + config.get("ratuV2").statusTopic);
-    mqttClient.subscribe("$share/tci-mqtt-gateway-group/" + config.get("ratuV2").configTopic);
+    mqttClient.subscribe(config.get("ratuV2").configTopic);
     mqttClient.subscribe("$share/tci-mqtt-gateway-group/ATUconn1/cmd");
 })
 
