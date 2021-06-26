@@ -2,7 +2,7 @@ const { Factory } = require('winston-simple-wrapper')
 const log = new Factory({
     transports: [{
         type: 'console',
-        level: 'silly'
+        level: 'debug'
     }, {
         type: 'file',
         level: 'debug',
@@ -108,13 +108,17 @@ wsClient.on('message', (message) => {
     mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
     try {
         const event = deserializer.parse(message);
-        log.info("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic() + " " + JSON.stringify(event), "WS");
-        mqttClient.publish("tci-mqtt-gateway/events/from-sdr", JSON.stringify(event));
-        mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic(), JSON.stringify(event), { retain: true });
+        let oldState = JSON.stringify(trxState);
         trxState = event.toState(trxState);
-        if (trxState.ready) {
-            mqttClient.publish("tci-mqtt-gateway/state/trx", JSON.stringify(trxState), { retain: true });
-            log.info("tci-mqtt-gateway/state/trx  " + JSON.stringify(trxState), "STATE");
+        mqttClient.publish("tci-mqtt-gateway/events/from-sdr", JSON.stringify(event));
+        if (JSON.stringify(trxState) !== oldState) {
+            log.debug("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic() + " " + JSON.stringify(event), "WS");
+            mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic(), JSON.stringify(event), { retain: true });
+            if (trxState.ready) {
+                mqttClient.publish("tci-mqtt-gateway/state/trx", JSON.stringify(trxState), { retain: true });
+                log.debug("tci-mqtt-gateway/state/trx  " + JSON.stringify(trxState), "STATE");
+            }
+                trxStateModified = false;
         }
     } catch (err) {
         if (!err.hasOwnProperty('location')) throw (err);
