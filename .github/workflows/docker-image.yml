@@ -30,7 +30,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}        
     
     - name: Build the Docker image (ArmV7)
-      run: docker buildx build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --output type=image,push=true
+      run: docker buildx build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest --tag dkaukov/tci-mqtt-gateway:$(date +%s) --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --output type=image,push=true
 #    - name: Build the Docker image (amd64)
 #      run: docker build . --file Dockerfile --tag dkaukov/tci-mqtt-gateway:latest     
 #    - name: Push the Docker image
