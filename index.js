@@ -20,7 +20,7 @@ const peg = require("pegjs");
 const fs = require('fs');
 const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-deserializer.pegjs').toString());
 const mqtt = require('mqtt')
-const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000 });
+const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000, clientId: "tci-mqtt-gateway"});
 const serializer = require("./protocol/tci-serializer");
 const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
 
