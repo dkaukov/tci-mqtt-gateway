@@ -20,7 +20,10 @@ const peg = require("pegjs");
 const fs = require('fs');
 const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-deserializer.pegjs').toString());
 const mqtt = require('mqtt')
-const mqttClient = mqtt.connect(config.get("MQTT").uri, { reconnectPeriod: 5000, clientId: "tci-mqtt-gateway"});
+const mqttClient = mqtt.connect(config.get("MQTT").uri, { 
+    reconnectPeriod: 5000, 
+    protocolVersion: 5,
+});
 const serializer = require("./protocol/tci-serializer");
 const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
 
@@ -28,17 +31,17 @@ var trxState = { ready: false };
 var ratuDevices = {};
 var activeDevice = undefined;
 
-mqttClient.on('connect', () => {
-    log.info('Connected to: ' + config.get("MQTT").uri, "MQTT");
-    mqttClient.subscribe('tci-mqtt-gateway/raw/to-sdr');
-    mqttClient.subscribe('tci-mqtt-gatewayv2/events/to-sdr');
-    mqttClient.subscribe(config.get("ratuV2").statusTopic);
-    mqttClient.subscribe(config.get("ratuV2").configTopic);
-    mqttClient.subscribe("ATUconn1/cmd");
+mqttClient.on('connect', (connack) => {
+    log.info('Connected to: ' + config.get("MQTT").uri + " " + JSON.stringify(connack), "MQTT");
+    mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gateway/raw/to-sdr");
+    mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gatewayv2/events/to-sdr");
+    mqttClient.subscribe("$share/tci-mqtt-gateway-group/" + config.get("ratuV2").statusTopic);
+    mqttClient.subscribe("$share/tci-mqtt-gateway-group/" + config.get("ratuV2").configTopic);
+    mqttClient.subscribe("$share/tci-mqtt-gateway-group/ATUconn1/cmd");
 })
 
 mqttClient.on('error', (error) => {
-    log.info(error.toString(), "MQTT");
+    log.error(error.toString(), "MQTT");
 });
 
 mqttClient.on("reconnect", () => {
