@@ -1,7 +1,7 @@
 FROM node:14-alpine as base
 
 WORKDIR /app
-RUN apk add --no-cache tzdata eudev
+#RUN apk add --no-cache tzdata eudev
 
 # Dependencies
 FROM base as dependencies
