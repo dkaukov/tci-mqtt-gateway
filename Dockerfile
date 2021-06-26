@@ -6,7 +6,7 @@ RUN apk add --no-cache tzdata eudev
 COPY package.json ./
 
 # Dependencies
-FROM base as dependencies
+#FROM base as dependencies
 
 #COPY package-lock.json ./
 
@@ -16,7 +16,7 @@ RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers 
     apk del .buildtools
 
 # Release
-FROM base as release
+#FROM base as release
 
 #COPY --from=dependencies /app/node_modules ./node_modules
 COPY index.js ./
