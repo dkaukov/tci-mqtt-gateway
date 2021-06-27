@@ -87,7 +87,7 @@ function handleIncomingMQTTMessage(topic, message) {
         log.info("Discovered device: " + JSON.stringify(device), "DISCO");
     } else {
         if (wsClient.isConnected) {
-            if (testTopicPattern(topic, TOPIC_EVENTS_TO_SDR_RAW())) {
+            if (testTopicPattern(topic, TOPIC_EVENTS_TO_SDR_RAW)) {
                 log.info(message.toString(), "RAW")
                 wsClient.send(message.toString());
             }
