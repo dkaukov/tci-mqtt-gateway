@@ -9,5 +9,16 @@
     "statusTopic": "ratu-v2/devices/+/status",
     "configTopic": "ratu-v2/configurations/#",
     "outputPrefix": "ATU-T"
-  }
+  },
+  "log": [
+    {
+      "type": "console",
+      "level": "debug"
+    },
+    {
+      "type": "file",
+      "level": "debug",
+      "filename": "logs/gateway.log"
+    }
+  ]
 }
