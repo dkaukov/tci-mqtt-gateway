@@ -1,65 +1,77 @@
-const { Factory } = require('winston-simple-wrapper')
-const log = new Factory({
-    transports: [{
-        type: 'console',
-        level: 'debug'
-    }, {
-        type: 'file',
-        level: 'debug',
-        filename: 'logs/gateway.log'
-    }]
-})
-const WSCLINET = require('ws-reconnect');
 process.env["NODE_CONFIG_DIR"] = __dirname + "/config/" + require('path').delimiter + "./config";
-const config = require('config');
-const wsClient = new WSCLINET(config.get("SDR").tci, {
-    retryCount: 1000,
-    reconnectInterval: 5
-});
+
 const peg = require("pegjs");
 const fs = require('fs');
+const { Factory} = require('winston-simple-wrapper')
+const WSCLINET = require('ws-reconnect');
+const config = require('config');
 const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-deserializer.pegjs').toString());
 const mqtt = require('mqtt')
-const mqttClient = mqtt.connect(config.get("MQTT").uri, { 
-    reconnectPeriod: 5000, 
-    protocolVersion: 5,
-});
 const serializer = require("./protocol/tci-serializer");
 const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
 
-var trxState = { ready: false };
+const TOPIC_SHARED_CONSUMER_PREFIX = "$share/tci-mqtt-gateway-group/";
+const TOPIC_PREFIX = "tci-mqtt-gateway/";
+const TOPIC_EVENTS_FROM_SDR = TOPIC_PREFIX + "events/from-sdr";
+const TOPIC_SDR_STATE = TOPIC_PREFIX + "state/trx";
+const TOPIC_EVENTS_FROM_SDR_RAW = TOPIC_PREFIX + "raw/from-sdr";
+const TOPIC_EVENTS_FROM_SDR_V2 = TOPIC_PREFIX + "v2/events/from-sdr/";
+const TOPIC_EVENTS_TO_SDR_RAW = TOPIC_PREFIX + "raw/to-sdr";
+const TOPIC_EVENTS_TO_SDR_V2 = "tci-mqtt-gatewayv2/events/to-sdr"
+const TOPIC_ATU_V1_CMD = "ATUconn1/cmd";
+
+var trxState = {
+    ready: false
+};
 var ratuDevices = {};
 var activeDevice = undefined;
 
-mqttClient.on('connect', (connack) => {
-    log.info('Connected to: ' + config.get("MQTT").uri + " " + JSON.stringify(connack), "MQTT");
-    mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gateway/raw/to-sdr");
-    mqttClient.subscribe("$share/tci-mqtt-gateway-group/tci-mqtt-gatewayv2/events/to-sdr");
-    mqttClient.subscribe("$share/tci-mqtt-gateway-group/" + config.get("ratuV2").statusTopic);
-    mqttClient.subscribe(config.get("ratuV2").configTopic);
-    mqttClient.subscribe("$share/tci-mqtt-gateway-group/ATUconn1/cmd");
+const log = new Factory({
+    transports: config.get("log")
 })
 
-mqttClient.on('error', (error) => {
-    log.error(error.toString(), "MQTT");
-});
+const wsClient = new WSCLINET(config.get("SDR").tci, {
+    retryCount: 1000,
+    reconnectInterval: 5
+}).on("reconnect", () => {
+    log.warn("Reconnecting...", "WS");
+}).on('connect', () => {
+    log.info('Connected to: ' + config.get("SDR").tci, "WS");
+    trxState = {
+        ready: false
+    };
+}).on('message', handleIncomingWsMessage);
 
-mqttClient.on("reconnect", () => {
+const mqttClient = mqtt.connect(config.get("MQTT").uri, {
+    reconnectPeriod: 5000,
+    protocolVersion: 5,
+}).on('connect', (connack) => {
+    log.info('Connected to: ' + config.get("MQTT").uri + " " + JSON.stringify(connack), "MQTT");
+    mqttClient.subscribe(TOPIC_SHARED_CONSUMER_PREFIX + TOPIC_EVENTS_TO_SDR_RAW);
+    mqttClient.subscribe(TOPIC_SHARED_CONSUMER_PREFIX + TOPIC_EVENTS_TO_SDR_V2);
+    mqttClient.subscribe(TOPIC_SHARED_CONSUMER_PREFIX + config.get("ratuV2").statusTopic);
+    mqttClient.subscribe(config.get("ratuV2").configTopic);
+    mqttClient.subscribe(TOPIC_SHARED_CONSUMER_PREFIX + TOPIC_ATU_V1_CMD);
+}).on('error', (error) => {
+    log.error(error.toString(), "MQTT");
+}).on("reconnect", () => {
     log.warn("Reconnecting...", "MQTT");
-});
+}).on('message', handleIncomingMQTTMessage);
 
 function testTopicPattern(topic, pattern) {
-    return new RegExp(pattern.split`+`.join`[^/]+`.split`#`.join`.+`).test(topic);
+    return new RegExp(pattern.split `+`.join `[^/]+`.split `#`.join `.+`).test(topic);
 }
 
-mqttClient.on('message', (topic, message) => {
-    if (testTopicPattern(topic, "ATUconn1/cmd")) {
-        cmd = JSON.parse(message.toString());
+function handleIncomingMQTTMessage(topic, message) {
+    if (testTopicPattern(topic, TOPIC_ATU_V1_CMD)) {
+        const cmd = JSON.parse(message.toString());
         if (typeof cmd["tune"] !== "undefined" && typeof activeDevice !== "undefined") {
-            mqttClient.publish(ratuDevices[activeDevice].commandTopic, JSON.stringify({ cmd: "tune" }));
+            mqttClient.publish(ratuDevices[activeDevice].commandTopic, JSON.stringify({
+                cmd: "tune"
+            }));
         }
     } else if (testTopicPattern(topic, config.get("ratuV2").statusTopic)) {
-        Object.getOwnPropertyNames(ratuDevices).forEach(function (d) {
+        Object.getOwnPropertyNames(ratuDevices).forEach((d) => {
             if (ratuDevices[d].statusTopic === topic) {
                 activeDevice = d;
             }
@@ -70,61 +82,55 @@ mqttClient.on('message', (topic, message) => {
             }
         })
     } else if (testTopicPattern(topic, config.get("ratuV2").configTopic)) {
-        let device = JSON.parse(message.toString());
+        const device = JSON.parse(message.toString());
         ratuDevices[device.device.id] = device;
         log.info("Discovered device: " + JSON.stringify(device), "DISCO");
     } else {
         if (wsClient.isConnected) {
-            if (topic === 'tci-mqtt-gateway/raw/to-sdr') {
+            if (testTopicPattern(topic, TOPIC_EVENTS_TO_SDR_RAW())) {
                 log.info(message.toString(), "RAW")
                 wsClient.send(message.toString());
             }
-            if (topic === 'tci-mqtt-gatewayv2/events/to-sdr') {
+            if (testTopicPattern(topic, TOPIC_EVENTS_TO_SDR_V2)) {
                 try {
-                    let msg = serializer.serialize(JSON.parse(message.toString()));
+                    const msg = serializer.serialize(JSON.parse(message.toString()));
                     log.info(msg, "SER");
                     wsClient.send(msg);
                 } catch (err) {
-                    log.error('TCI serializer error: ' + err, "SER");
+                    log.error("TCI serializer error: " + err, "SER");
                 }
             }
         } else {
             log.warn(`wsClient is not connected, discarding: ${message.toString}`, "MQTT")
         }
     }
-})
+}
 
-wsClient.on("reconnect", () => {
-    log.warn("Reconnecting...", "WS");
-});
-
-wsClient.on('connect', () => {
-    log.info('Connected to: ' + config.get("SDR").tci, "WS");
-    trxState = { ready: false };
-});
-
-wsClient.on('message', (message) => {
+function handleIncomingWsMessage(message) {
     log.silly("Received: '" + message + "'", "RAW");
-    mqttClient.publish("tci-mqtt-gateway/raw/from-sdr", message);
+    mqttClient.publish(TOPIC_EVENTS_FROM_SDR_RAW, message);
     try {
         const event = deserializer.parse(message);
-        let oldState = JSON.stringify(trxState);
+        const oldState = JSON.stringify(trxState);
         trxState = event.toState(trxState);
-        mqttClient.publish("tci-mqtt-gateway/events/from-sdr", JSON.stringify(event));
+        mqttClient.publish(TOPIC_EVENTS_FROM_SDR, JSON.stringify(event));
         if (JSON.stringify(trxState) !== oldState) {
-            log.debug("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic() + " " + JSON.stringify(event), "WS");
-            mqttClient.publish("tci-mqtt-gateway/v2/events/from-sdr/" + event.topic(), JSON.stringify(event), { retain: true });
+            mqttClient.publish(TOPIC_EVENTS_FROM_SDR_V2 + event.topic(), JSON.stringify(event), {
+                retain: true
+            });
+            log.debug(TOPIC_EVENTS_FROM_SDR_V2 + event.topic() + " " + JSON.stringify(event), "WS");
             if (trxState.ready) {
-                mqttClient.publish("tci-mqtt-gateway/state/trx", JSON.stringify(trxState), { retain: true });
-                log.debug("tci-mqtt-gateway/state/trx  " + JSON.stringify(trxState), "STATE");
+                mqttClient.publish(TOPIC_SDR_STATE, JSON.stringify(trxState), {
+                    retain: true
+                });
+                log.debug(TOPIC_SDR_STATE + "  " + JSON.stringify(trxState), "STATE");
             }
-                trxStateModified = false;
         }
     } catch (err) {
-        if (!err.hasOwnProperty('location')) throw (err);
-        //log.silly('TCI parser error: ' + err);
+        if (!err.hasOwnProperty("location")) throw (err);
+        log.silly("TCI parser error: " + err);
     }
-});
+}
 
 async function start() {
     log.info("Starting up.");
