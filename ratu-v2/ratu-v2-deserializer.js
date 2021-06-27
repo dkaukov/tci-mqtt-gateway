@@ -1,66 +1,66 @@
-const jp = require('jsonpath');
+const {JSONPath} = require('jsonpath-plus');
 
 function deSerializeStatus(prefix, input) {
     return [
         {
             topic: prefix + "/TuningStatus",
-            value: jp.value(input, "$.atu.state")
+            value: JSONPath("$.atu.state", input)
         },
         {
             topic: prefix + "/mode",
-            value: jp.value(input, "$.atu.mode")
+            value: JSONPath("$.atu.mode", input)
         },
         {
             topic: prefix + "/rawFWD",
-            value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.fwdRaw")
+            value: JSONPath("$.sensor.SWRMeterAds1115Ad8310.fwdRaw", input)
         },
         {
             topic: prefix + "/rawREF",
-            value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.rflRaw")
+            value: JSONPath("$.sensor.SWRMeterAds1115Ad8310.rflRaw", input)
         },
         {
             topic: prefix + "/fwdPwrVal",
-            value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.fwd")
+            value: JSONPath("$.sensor.SWRMeterAds1115Ad8310.fwd", input)
         },
         {
             topic: prefix + "/fwdPwrDisplay",
-            value: Number(jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.fwd")).toFixed(2)
+            value: Number(JSONPath("$.sensor.SWRMeterAds1115Ad8310.fwd"), input).toFixed(2)
         },
         {
             topic: prefix + "/rflPwrVal",
-            value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.rfl")
+            value: JSONPath("$.sensor.SWRMeterAds1115Ad8310.rfl", input)
         },
         {
             topic: prefix + "/pwrdBmFWD",
-            value: 10 * Math.log10(1000 * jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.rfl"))
+            value: 10 * Math.log10(1000 * JSONPath("$.sensor.SWRMeterAds1115Ad8310.rfl", input))
         },
         {
             topic: prefix + "/valueSWR",
-            value: jp.value(input, "$.sensor.SWRMeterAds1115Ad8310.swr")
+            value: JSONPath("$.sensor.SWRMeterAds1115Ad8310.swr", input)
         },
         {
             topic: prefix + "/c1actualStep",
-            value: jp.value(input, "$.actuator.C1.value")
+            value: JSONPath("$.actuator.C1.value", input)
         },
         {
             topic: prefix + "/c2actualStep",
-            value: jp.value(input, "$.actuator.C2.value")
+            value: JSONPath("$.actuator.C2.value", input)
         },
         {
             topic: prefix + "/lactualStep",
-            value: jp.value(input, "$.actuator.L.value")
+            value: JSONPath("$.actuator.L.value", input)
         },
         {
             topic: prefix + "/c1actualVal",
-            value: jp.value(input, "$.actuator.C1.phValue")
+            value: JSONPath("$.actuator.C1.phValue", input)
         },
         {
             topic: prefix + "/c2actualVal",
-            value: jp.value(input, "$.actuator.C2.phValue")
+            value: JSONPath("$.actuator.C2.phValue", input)
         },
         {
             topic: prefix + "/lactualVal",
-            value: jp.value(input, "$.actuator.L.phValue")
+            value: JSONPath("$.actuator.L.phValue", input)
         },
     ];
 
