@@ -6,7 +6,7 @@ The following code supports [TCI version 1.5](https://github.com/maksimus1210/TC
 
 ## Installation
 * install node/npm
-* `npm install`
+* `npm install` from the Gateway directory 
 
 ## Using Gateway
 * `npm run start` - to start Gateway
