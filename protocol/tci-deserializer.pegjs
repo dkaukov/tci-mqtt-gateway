@@ -217,25 +217,25 @@ rx_smeter
 
 
 drive
-    = "drive:" power:float 
+    = "drive:" trx:integer SEP power:float 
     {return {
         cmd: "drive", 
-        data:{power: power}, 
-        topic: () => "drive",
+        data:{trx:trx, power: power},
+        topic: () => `drive/${trx}`,
         toState: (state) => {
-            state.tx_power_pct = power; 
+            setupTrx(state, trx).trx[trx].tx_power_pct = power;
             return state;
         }}; 
     }
 
 tune_drive
-    = "tune_drive:" power:float 
+    = "tune_drive:" trx:integer SEP power:float 
     {return {
         cmd: "tune_drive", 
-        data:{power: power}, 
-        topic: () => "tune_drive",
+        data:{trx:trx, power: power},
+        topic: () => `tune_drive/${trx}`,
         toState: (state) => {
-            state.tune_power_pct = power;
+            setupTrx(state, trx).trx[trx].tune_power_pct = power;
             return state;
         }}; 
     }
