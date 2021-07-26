@@ -36,6 +36,8 @@ TciCommand
     / modulation
     / ready
     / rx_smeter
+    / drive_15
+    / tune_drive_15
     / drive
     / tune_drive
 
@@ -215,8 +217,31 @@ rx_smeter
         }}; 
     } 
 
-
 drive
+    = "drive:" power:float 
+    {return {
+        cmd: "drive", 
+        data:{power: power}, 
+        topic: () => "drive",
+        toState: (state) => {
+            state.tx_power_pct = power; 
+            return state;
+        }}; 
+    }
+
+tune_drive
+    = "tune_drive:" power:float 
+    {return {
+        cmd: "tune_drive", 
+        data:{power: power}, 
+        topic: () => "tune_drive",
+        toState: (state) => {
+            state.tune_power_pct = power;
+            return state;
+        }}; 
+    }
+
+drive_15
     = "drive:" trx:integer SEP power:float 
     {return {
         cmd: "drive", 
@@ -228,7 +253,7 @@ drive
         }}; 
     }
 
-tune_drive
+tune_drive_15
     = "tune_drive:" trx:integer SEP power:float 
     {return {
         cmd: "tune_drive", 
