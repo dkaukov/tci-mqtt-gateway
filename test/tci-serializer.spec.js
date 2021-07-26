@@ -20,11 +20,11 @@ describe('TCI serializer test', () => {
         assert.strictEqual("rx_smeter:1,1;", serializer.serialize({cmd: "rx_smeter", trx: 1, channel: 1}));
     });   
     it('drive', () => {
-        assert.strictEqual("drive:10;", serializer.serialize({cmd: "drive", power: 10}));
-    });   
+        assert.strictEqual("drive:1,10;", serializer.serialize({cmd: "drive", trx: 1, power: 10}));
+    });
     it('tune_drive', () => {
-        assert.strictEqual("tune_drive:10;", serializer.serialize({cmd: "tune_drive", power: 10}));
-    });   
+        assert.strictEqual("tune_drive:1,10;", serializer.serialize({cmd: "tune_drive", trx: 1, power: 10}));
+    }); 
     it('cw_msg', () => {
         assert.strictEqual("cw_msg:1,hello,FKN72,word;", serializer.serialize({cmd: "cw_msg", trx: 1, pre_callsign: "hello", callsign: "FKN72", post_callsign: "word"}));
     });   
