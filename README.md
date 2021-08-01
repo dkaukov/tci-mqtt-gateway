@@ -8,7 +8,7 @@
 
 # tci-mqtt-gateway for ESDR2 and ESDR3 / TCI 1.4/1.5
 
-The following code supports [TCI version 1.5](https://github.com/maksimus1210/TCI) and ESDR3. 
+The following code supports [TCI version 1.4 and 1.5](https://github.com/maksimus1210/TCI) for ESDR2 update 9 and ESDR3 alpha. 
 
 Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly woth TCI moves to next version.
  
