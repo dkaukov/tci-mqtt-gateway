@@ -25,13 +25,8 @@ Please note that this version is reflecting current TCI features. Because of TCI
 
 ## TCI version-dependent commands
 
-* TCI 1.4
-drive
-tune_drive
-
-* TCI 1.5
-drive_15
-tune_drive_15
+* TCI 1.4: `drive` and `tune_drive`
+* TCI 1.5: `drive_15` and `tune_drive_15`
 
 ## Working with log output
 Running log is located in working directory.
