@@ -18,7 +18,7 @@ Please note that this version is reflecting current TCI features. Because of TCI
 
 ## Using Gateway
 * `npm run start` - to start Gateway
-*  close the termonal to stop Gateway
+*  close the terminal to stop Gateway
 
 # docker
 `docker run --name tci-mqtt-gateway -e MQTT_URI=mqtt://mqtt.server.host -e TCI_URI=ws://tci.server.host dkaukov/tci-mqtt-gateway`
