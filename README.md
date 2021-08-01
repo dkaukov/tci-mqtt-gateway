@@ -6,14 +6,12 @@
 <img src="https://img.shields.io/github/license/dkaukov/tci-mqtt-gateway.svg?style=for-the-badge" />
 </p>
 
-# tci-mqtt-gateway for ESDR3 / TCI 1.5
+# tci-mqtt-gateway for ESDR2 and ESDR3 / TCI 1.4/1.5
 
 The following code supports [TCI version 1.5](https://github.com/maksimus1210/TCI) and ESDR3. 
 
 Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly woth TCI moves to next version.
-
-<b>Important</b>: ESDR2 is not supported by this version. For ESDR2 / TCI 1.4 please use [this GW version](https://github.com/dkaukov/tci-mqtt-gateway)
-
+ 
 ## Installation
 * install node/npm
 * `npm install` from the Gateway directory 
@@ -24,3 +22,23 @@ Please note that this version is reflecting current TCI features. Because of TCI
 
 # docker
 `docker run --name tci-mqtt-gateway -e MQTT_URI=mqtt://mqtt.server.host -e TCI_URI=ws://tci.server.host dkaukov/tci-mqtt-gateway`
+
+## TCI version-dependent commands
+
+* TCI 1.4
+drive
+tune_drive
+
+* TCI 1.5
+drive_15
+tune_drive_15
+
+## Working with log output
+Running log is located in working directory.
+
+To disable log output on console, change "debug" to "info" in the following section of default.json (located in config folder)
+"log": [
+    {
+      "level": "debug",
+    }
+t
