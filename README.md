@@ -10,7 +10,7 @@
 
 The following code supports [TCI version 1.4 and 1.5](https://github.com/maksimus1210/TCI) for ESDR2 update 9 and ESDR3 alpha. 
 
-Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly woth TCI moves to next version.
+Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly with TCI moves to next version.
  
 ## Installation
 * install node/npm
