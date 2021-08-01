@@ -36,9 +36,10 @@ tune_drive_15
 ## Working with log output
 Running log is located in working directory.
 
-To disable log output on console, change "debug" to "info" in the following section of default.json (located in config folder)
+To disable log output on console, change `debug` to `info` in the following section of default.json (located in config folder)
+`
 "log": [
     {
       "level": "debug",
     }
-t
+`
