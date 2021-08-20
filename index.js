@@ -64,27 +64,39 @@ function testTopicPattern(topic, pattern) {
 
 function handleIncomingMQTTMessage(topic, message) {
     if (testTopicPattern(topic, TOPIC_ATU_V1_CMD)) {
-        const cmd = JSON.parse(message.toString());
-        if (typeof cmd["tune"] !== "undefined" && typeof activeDevice !== "undefined") {
-            mqttClient.publish(ratuDevices[activeDevice].commandTopic, JSON.stringify({
-                cmd: "tune"
-            }));
+        try {
+            const cmd = JSON.parse(message.toString());
+            if (typeof cmd["tune"] !== "undefined" && typeof activeDevice !== "undefined") {
+                mqttClient.publish(ratuDevices[activeDevice].commandTopic, JSON.stringify({
+                    cmd: "tune"
+                }));
+            }
+        } catch (err) {
+            log.error("ATU V1 command error: " + err, "V1");
         }
     } else if (testTopicPattern(topic, config.get("ratuV2").statusTopic)) {
-        Object.getOwnPropertyNames(ratuDevices).forEach((d) => {
-            if (ratuDevices[d].statusTopic === topic) {
-                activeDevice = d;
-            }
-        });
-        ratuV2deserializer.deSerializeStatus(config.get("ratuV2").outputPrefix, JSON.parse(message.toString())).forEach(function (msg) {
-            if (typeof msg.value !== "undefined") {
-                mqttClient.publish(msg.topic, String(msg.value));
-            }
-        })
+        try {
+            Object.getOwnPropertyNames(ratuDevices).forEach((d) => {
+                if (ratuDevices[d].statusTopic === topic) {
+                    activeDevice = d;
+                }
+            });
+            ratuV2deserializer.deSerializeStatus(config.get("ratuV2").outputPrefix, JSON.parse(message.toString())).forEach(function (msg) {
+                if (typeof msg.value !== "undefined") {
+                    mqttClient.publish(msg.topic, String(msg.value));
+                }
+            })
+        } catch (err) {
+            log.error("ATU V1 status error: " + err, "V1");
+        }
     } else if (testTopicPattern(topic, config.get("ratuV2").configTopic)) {
-        const device = JSON.parse(message.toString());
-        ratuDevices[device.device.id] = device;
-        log.info("Discovered device: " + JSON.stringify(device), "DISCO");
+        try {
+            const device = JSON.parse(message.toString());
+            ratuDevices[device.device.id] = device;
+            log.info("Discovered device: " + JSON.stringify(device), "DISCO");
+        } catch {
+            log.error("ATU V2 config error: " + err, "V1");
+        }
     } else {
         if (wsClient.isConnected) {
             if (testTopicPattern(topic, TOPIC_EVENTS_TO_SDR_RAW)) {
