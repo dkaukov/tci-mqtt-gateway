@@ -5,8 +5,8 @@ function serialize(input) {
         case "start": return `start;`;
         case "stop": return `stop;`;
         case "rx_smeter": return `rx_smeter:${input.trx},${input.channel};`;
-        case "drive": if (input.trx) return `drive:${input.trx},${input.power};`; else return `drive:${input.power};`;
-        case "tune_drive": if (input.trx) return `tune_drive:${input.trx},${input.power};`; else return `tune_drive:${input.power};`;
+        case "drive": if ("trx" in input) return `drive:${input.trx},${input.power};`; else return `drive:${input.power};`;
+        case "tune_drive": if ("trx" in input) return `tune_drive:${input.trx},${input.power};`; else return `tune_drive:${input.power};`;
     }
     return null;
 }
