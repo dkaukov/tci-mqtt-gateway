@@ -119,6 +119,10 @@ function handleIncomingMQTTMessage(topic, message) {
 }
 
 function handleIncomingWsMessage(message) {
+    if (Buffer.isBuffer(message)) {
+        log.silly("Received audio  stream: " + Buffer.byteLength(message) + " bytes", "RAW");
+        return;
+    }
     log.silly("Received: '" + message + "'", "RAW");
     mqttClient.publish(TOPIC_EVENTS_FROM_SDR_RAW, message);
     try {
