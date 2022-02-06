@@ -9,6 +9,29 @@ const deserializer = peg.generate(fs.readFileSync(__dirname + '/protocol/tci-des
 const mqtt = require('mqtt')
 const serializer = require("./protocol/tci-serializer");
 const ratuV2deserializer = require("./ratu-v2/ratu-v2-deserializer");
+const BinaryParser = require('binary-parse');
+const parser = new BinaryParser({
+	Stream: {
+        receiver: "uint32le", // receiver number 
+        sample_rate: "uint32le",  // sampling rate
+        format: "uint32le",
+        codec: "uint32le",
+        crc: "uint32le",
+        length: "uint32le",
+        type: "uint32le",
+        reserv: ["array", "uint32le", 9],
+        data: ["array", "floatle", 4096]
+	},
+});
+
+
+const Speaker = require('speaker-arm64');
+const speaker = new Speaker({
+    channels: 2,          
+    bitDepth: 32,         
+    sampleRate: 48000,
+    float: true       
+});
 
 const TOPIC_SHARED_CONSUMER_PREFIX = "$share/tci-mqtt-gateway-group/";
 const TOPIC_PREFIX = "tci-mqtt-gateway/";
@@ -120,7 +143,15 @@ function handleIncomingMQTTMessage(topic, message) {
 
 function handleIncomingWsMessage(message) {
     if (Buffer.isBuffer(message)) {
-        log.silly("Received audio  stream: " + Buffer.byteLength(message) + " bytes", "RAW");
+        let data = parser.parse(message, 'Stream');
+        log.silly("Received audio stream: " +  JSON.stringify({
+            receiver: data.receiver,
+            sample_rate: data.sample_rate,
+            length: data.length,
+            type: data.type
+        }), "RAW");
+        //speaker.write(Buffer.of(new Int8Array((Float32Array.from(data.data.slice(data.length * 4)).buffer))));
+        speaker.write(message.slice(16 * 4));
         return;
     }
     log.silly("Received: '" + message + "'", "RAW");
