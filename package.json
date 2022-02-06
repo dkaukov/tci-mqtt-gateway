@@ -19,7 +19,7 @@
     "jsonpath-plus": "^5.1.0",
     "mqtt": "^4.2.8",
     "pegjs": "^0.10.0",
-    "speaker-arm64": "^0.5.2",
+    "speaker": "git+https://github.com/dkaukov/node-speaker.git",
     "websocket": "^1.0.33",
     "winston-simple-wrapper": "^0.3.1",
     "ws-reconnect": "^1.0.7"

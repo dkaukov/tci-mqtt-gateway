@@ -25,7 +25,7 @@ const parser = new BinaryParser({
 });
 
 
-const Speaker = require('speaker-arm64');
+const Speaker = require('speaker');
 const speaker = new Speaker({
     channels: 2,          
     bitDepth: 32,         
