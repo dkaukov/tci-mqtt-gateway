@@ -27,10 +27,10 @@ const parser = new BinaryParser({
 
 const Speaker = require('speaker');
 const speaker = new Speaker({
-    channels: 2,          
-    bitDepth: 32,         
+    channels: 2,
+    bitDepth: 32,
     sampleRate: 48000,
-    float: true       
+    float: true
 });
 
 const TOPIC_SHARED_CONSUMER_PREFIX = "$share/tci-mqtt-gateway-group/";
@@ -181,6 +181,9 @@ function handleIncomingWsMessage(message) {
 
 async function start() {
     log.info("Starting up.");
+    speaker.write(Buffer.from(new Float32Array(Array(8196).fill(0)).buffer), () => {
+      log.debug('Speaker data written', "STR");  
+    });
     wsClient.start();
 }
 
