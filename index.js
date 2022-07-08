@@ -20,7 +20,7 @@ const parser = new BinaryParser({
         length: "uint32le",
         type: "uint32le",
         reserv: ["array", "uint32le", 9],
-        data: ["array", "floatle", 4096]
+//        data: ["array", "floatle", 4096]
 	},
 });
 
