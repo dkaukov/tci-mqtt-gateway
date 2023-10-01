@@ -6,9 +6,9 @@
 <img src="https://img.shields.io/github/license/dkaukov/tci-mqtt-gateway.svg?style=for-the-badge" />
 </p>
 
-# tci-mqtt-gateway for ESDR2 and ESDR3 / TCI 1.4/1.5
+# tci-mqtt-gateway for ESDR2 and ESDR3 / TCI 1.4/1.5+
 
-The following code supports [TCI version 1.4 and 1.5](https://github.com/maksimus1210/TCI) for ESDR2 update 9 and ESDR3 alpha. 
+The following code supports [TCI version 1.4 and 1.5](https://github.com/ExpertSDR3/TCI) for ESDR2 update 9-11 and ESDR3 alpha/beta (all versions). 
 
 Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly with TCI moves to next version.
  
@@ -26,7 +26,7 @@ Please note that this version is reflecting current TCI features. Because of TCI
 ## TCI version-dependent commands
 
 * TCI 1.4: `drive` and `tune_drive`
-* TCI 1.5: `drive_15` and `tune_drive_15`
+* TCI 1.5 and above: `drive_15` and `tune_drive_15`
 
 ## Working with log output
 Running log is located in working directory.
