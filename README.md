@@ -10,7 +10,7 @@
 
 The following code supports [TCI version 1.4 and 1.5+](https://github.com/ExpertSDR3/TCI) for ESDR2 update 9-11 and ESDR3 alpha/beta (all versions). 
 
-Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current ibrary will be updated accordingly with TCI moves to next version.
+Please note that this version is reflecting current TCI features. Because of TCI is in WIP mode at this stage, this current library will be updated accordingly with/when TCI moves to next version and relevant commands are changing.
  
 ## Installation
 * install node/npm
